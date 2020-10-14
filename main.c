@@ -8,6 +8,9 @@
 #include <string.h>
 #include <dirent.h>
 
+#define PREFIX "movies_"
+#define POSTFIX ".csv"
+
 //FUNCTION DECLARATIONS
 void fileProcessingMenu();
 void largestFile();
@@ -98,13 +101,27 @@ void largestFile()
 {
     //open the current directory
     DIR* currDir = opendir(".");
+    DIR* myDir = currDir; //used to save largest file
     struct dirent *aDir;
+//struct stat dirStat;
 
     //iterate through all entries in directory
     while ((aDir = readdir(currDir)) != NULL)
     {
-        printf("%s %llu\n", aDir->d_name, aDir->d_ino);
-        //do stuff here...
+        //check if movies file starts with prefix ("movies_")
+        if (strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0)
+        {
+            int size = strlen(POSTFIX); //get size of POSTFIX (4 characters ".csv")
+            int tempSize = strlen(aDir->d_name) - size; //get size of directory - size
+            //make temp pointer to directory file starting at end - size address (which leaves just the last 4 characters)
+            char *testName = &aDir->d_name[tempSize];
+
+            //check if movies file ends with postfix (".csv")
+            if (strcmp(testName, POSTFIX) == 0)
+            {
+                printf("%s\n", aDir->d_name);
+            }
+        }
     }
 
     //close directory and exit function
