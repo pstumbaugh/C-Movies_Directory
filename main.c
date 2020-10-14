@@ -100,6 +100,8 @@ void fileProcessingMenu()
     return;
 }
 
+
+
 void largestFile()
 {
     //open the current directory
@@ -144,6 +146,7 @@ void largestFile()
     }
     //display which file it is processing
     printf("Now processing the chosen file named %s\n", myDir->d_name);
+
     printf("\n");
 
     //close directory and exit function
@@ -151,11 +154,17 @@ void largestFile()
     return;
 }
 
+
+
+
 void smallestFile()
 {
 
     return;
 }
+
+
+
 
 void specifyFile()
 {
