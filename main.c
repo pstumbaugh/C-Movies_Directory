@@ -13,6 +13,7 @@
 
 #define PREFIX "movies_"
 #define POSTFIX ".csv"
+#define ONID "stumbaup"
 
 //FUNCTION DECLARATIONS
 void fileProcessingMenu();
@@ -111,6 +112,8 @@ void largestFile()
     struct stat dirStat;
     struct stat myDirStat;
     int counter = 0;
+    int randomNumber = random() % 10000;
+    printf("%i", randomNumber);
 
     //iterate through all entries in directory
     while ((aDir = readdir(currDir)) != NULL)
@@ -148,6 +151,8 @@ void largestFile()
     printf("Now processing the chosen file named %s\n", myDir->d_name);
 
     printf("\n");
+
+
 
     //close directory and exit function
     closedir(currDir);
