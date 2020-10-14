@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define PREFIX "movies_"
 #define POSTFIX ".csv"
@@ -101,9 +104,11 @@ void largestFile()
 {
     //open the current directory
     DIR* currDir = opendir(".");
-    DIR* myDir = currDir; //used to save largest file
+    struct dirent *myDir; //used to save largest file
     struct dirent *aDir;
-//struct stat dirStat;
+    struct stat dirStat;
+    struct stat myDirStat;
+    int counter = 0;
 
     //iterate through all entries in directory
     while ((aDir = readdir(currDir)) != NULL)
@@ -119,10 +124,27 @@ void largestFile()
             //check if movies file ends with postfix (".csv")
             if (strcmp(testName, POSTFIX) == 0)
             {
-                printf("%s\n", aDir->d_name);
+                if (counter == 0)//first item matching name qualifications, save that
+                {
+                    myDir = aDir;
+                    counter = 1;
+                }
+                else
+                {
+                    stat(aDir->d_name, &dirStat);
+                    stat(myDir->d_name, &myDirStat);
+                    //if new dir is larger than currently saved dir, copy over the old one with the new one
+                    if (dirStat.st_size > myDirStat.st_size)
+                    {
+                        myDir = aDir;
+                    } 
+                }
             }
         }
     }
+    //display which file it is processing
+    printf("Now processing the chosen file named %s\n", myDir->d_name);
+    printf("\n");
 
     //close directory and exit function
     closedir(currDir);
