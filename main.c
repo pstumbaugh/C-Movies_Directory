@@ -19,6 +19,7 @@ void fileProcessingMenu();
 void largestFile();
 void smallestFile();
 void specifyFile();
+char* generateName();
 
 int main()
 {
@@ -111,7 +112,6 @@ void largestFile()
     struct stat dirStat;
     struct stat myDirStat;
     int counter = 0;
-    int randomNumber = random() % 10000;
 
     //iterate through all entries in directory
     while ((aDir = readdir(currDir)) != NULL)
@@ -132,7 +132,7 @@ void largestFile()
                     myDir = aDir;
                     counter = 1;
                 }
-                else
+                else // check if aDir (one being viewed currrently) is larger than saved myDir
                 {
                     stat(aDir->d_name, &dirStat);
                     stat(myDir->d_name, &myDirStat);
@@ -150,30 +150,11 @@ void largestFile()
 
     printf("\n");
 
+    //create a new directory name
+    char* newDirName = generateName();
 
-    char rNumStr[50];
-    sprintf(rNumStr, "%i", randomNumber);
-    //printf("%s\n", rNumStr);
-
-    char* newDirName = "stumbaup";
-    char* moviesName = ".movies.";
-    char* ONID = "stumbuap";
-    int newSize = strlen(newDirName) + strlen(moviesName) + strlen(rNumStr); //total size of dir name
-
-    char* newBuffer = (char *)malloc(newSize); //make memory room for new dir name size
-
-    //copy and concat the names
-    strcpy(newBuffer,newDirName);
-    strcat(newBuffer,moviesName);
-    strcat(newBuffer,rNumStr);
-    // store new pointer
-    newDirName = newBuffer;
-
-   // release old buffer
-    free(newBuffer);
-
-
-
+    //create the directory
+    mkdir(newDirName, 0750);
 
 
 printf("%s", newDirName);
@@ -200,4 +181,40 @@ void specifyFile()
 
 
     return;
+}
+
+
+
+//Creates a new char* name using ONID, _movies_, random number
+//INPUT: nothing
+//OUTPUT: cstring
+char* generateName()
+{
+    int randomNumber = random() % 10000;
+    //create spot for random number int to be converted to string
+    char rNumStr[50];
+    sprintf(rNumStr, "%i", randomNumber); // convert to string
+    //printf("%s\n", rNumStr);
+
+    char* newDirName = "stumbaup";
+    char* moviesName = ".movies.";
+    char* ONID = "stumbuap";
+    //get total size of new name
+    int newSize = strlen(newDirName) + strlen(moviesName) + strlen(rNumStr);
+
+    //allocate memory for new name size
+    char* newBuffer = (char *)malloc(newSize);
+
+    //copy and concat the names into newBuffer
+    strcpy(newBuffer,newDirName);
+    strcat(newBuffer,moviesName);
+    strcat(newBuffer,rNumStr);
+
+    // copy the new buffer
+    newDirName = newBuffer;
+
+   // release old buffer
+    free(newBuffer);
+
+    return newDirName;
 }
