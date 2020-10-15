@@ -20,7 +20,7 @@ void largestFile();
 void smallestFile();
 void specifyFile();
 char* generateName();
-void createMovieFiles(char* directoryName);
+void createMovieFiles(char* directoryName, char* fileName);
 
 int main()
 {
@@ -157,7 +157,7 @@ void largestFile()
     mkdir(newDirName, 0750);
 
     //create files within newDirName, one file for each year a movie was released (.txt files)
-    createMovieFiles(newDirName);
+    createMovieFiles(newDirName, myDir->d_name);
 
 
 printf("%s", newDirName);
@@ -224,9 +224,150 @@ char* generateName()
 
 
 
-void createMovieFiles(char* directoryName)
+//Creates files for each year, if a movie was released in that year. 
+//INPUT: char* directoryName and fileName
+//OUPUT: creates .txt files wihtin directoryName 
+void createMovieFiles(char* directoryName, char* fileName)
 {
-    
+    //process the file
+    processFile(fileName);
 
     return;
 }
+
+
+
+
+//creator for movie struct. Will parse through current line to gather info
+//INPUT: currLine cstring pointer
+//OUTPUT: movie struct node
+struct movie *createMovie(char *currLine)
+{
+    //Variables
+    //allocate memory for new movie struct (will free at end of function)
+    struct movie *currMovie = malloc(sizeof(struct movie));
+    // For use with strtok_r
+    char *saveptr;
+    char *langSaveptr;
+    //token placeholders for info
+    char *token;
+    char *langToken;
+
+    // Get movie title
+    token = strtok_r(currLine, ",", &saveptr); //from first token
+    currMovie->title = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(currMovie->title, token);
+    
+    //get movie year
+    token = strtok_r(NULL, ",", &saveptr); //from second token
+    currMovie->tempYear = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(currMovie->tempYear, token);
+    //convert from string to int
+    currMovie->year = atoi(currMovie->tempYear);
+
+    //get movie language(s)
+    //token includes all languages
+    token = strtok_r(NULL, ",", &saveptr); //from third token
+    langToken = strtok_r(token, "[", &langSaveptr); //get rid of [ from start
+    int langCounter = 0;
+    while (langCounter < 5)
+    {
+        if (langCounter == 0) //first item
+        {
+            token = strtok_r(langToken, "; ]", &langSaveptr); //from first token
+            strcpy(currMovie->languages[langCounter], token);
+            langCounter++;
+        }
+        else
+        {
+            token = strtok_r(NULL, "; ]", &langSaveptr); //from first token
+            if (token == NULL) //nothing left
+                break;
+            strcpy(currMovie->languages[langCounter], token);
+            langCounter++;
+        }
+    }
+
+    //get movie rating
+    //delimted by new line \n
+    token = strtok_r(NULL, "\n", &saveptr);
+    currMovie->tempRating = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(currMovie->tempRating, token);
+    //convert from string to double
+    char* end;
+    currMovie->rating = strtod(currMovie->tempRating, &end);
+    
+    //assume this node will be at end of list, set next pointer to NULL
+    currMovie->next = NULL;
+
+    return currMovie;
+}
+
+
+
+
+
+//read through input file and parse information into a linked list of movies
+//INPUT: cstring pointer filePath
+//OUTPUT: head pointer to linked list
+struct movie *processFile(char *filePath)
+{
+    // Open the specified file for reading
+    FILE *moviesFile = fopen(filePath, "r");
+
+    //variables to use while making new linked list of movies
+    char *currLine = NULL; //assume starting with no data, null
+    size_t len = 0;
+    ssize_t nread;
+    //setup head/tail pointers for linked list to NULL (empty list)
+    //head will point to head of linked list.
+    //tail will point to last item in linked list
+    struct movie *head = NULL;
+    struct movie *tail = NULL;
+
+    //get first line and do nothing with it
+    //first line is just column titles
+    getline(&currLine, &len, moviesFile);
+
+    // Read the file line by line (starting at line 2)
+    //loop until out of data
+    while ((nread = getline(&currLine, &len, moviesFile)) != -1)
+    {
+        //if in loop, assume there is a new movie to get
+        //create a new movie node, call createMovie function to get info
+        // from line
+        struct movie *newNode = createMovie(currLine);
+
+        //check if it's the first line. If yes, set head and tail pointers
+        if (head == NULL)
+        {
+            head = newNode;
+            tail = newNode;
+        }
+        else //there are movies already in data, add to end of linked list
+        {
+            tail->next = newNode;
+            tail = newNode; //reset tail pointer to current node
+        }
+    }
+    
+    free(currLine); //free up memory
+    fclose(moviesFile); //close file
+    return head;
+}
+
+
+//movie struct
+struct movie
+{
+    //variables within movie struct
+    char *title;
+    char *tempYear; //using as a temp holder, will change str to int year
+    int year;
+    //at most, 5 languages can be saved (0-4)
+    //each string max of 20 characters (+null terminating)
+    char languages[4][21];
+    char *tempRating; //using as a temp holder, will change str to int rating
+    double rating;
+    struct movie *next; //pointer to next linked list item
+};
