@@ -151,41 +151,27 @@ void largestFile()
     printf("\n");
 
 
-    char result[50];
-    sprintf(result, "%i", randomNumber);
-    //printf("%s\n", result);
-
-
+    char rNumStr[50];
+    sprintf(rNumStr, "%i", randomNumber);
+    //printf("%s\n", rNumStr);
 
     char* newDirName = "stumbaup";
     char* moviesName = ".movies.";
     char* ONID = "stumbuap";
-    int newSize = strlen(newDirName) + strlen(moviesName); //total size of dir name
+    int newSize = strlen(newDirName) + strlen(moviesName) + strlen(rNumStr); //total size of dir name
 
     char* newBuffer = (char *)malloc(newSize); //make memory room for new dir name size
 
     //copy and concat the names
     strcpy(newBuffer,newDirName);
     strcat(newBuffer,moviesName);
+    strcat(newBuffer,rNumStr);
     // store new pointer
     newDirName = newBuffer;
 
-printf("%s", newDirName);
-
    // release old buffer
- //  free(real[i].buffer);
+    free(newBuffer);
 
-/*
-    newSize = strlen(newDirName) + strlen(ONID); //total size of dir name
-
-    char* newBuffer1 = (char *)malloc(newSize); //make memory room for new dir name size
-
-    //copy and concat the names
-    strcpy(newBuffer1,newDirName);
-    strcat(newBuffer1,moviesName);
-    // store new pointer
-    newDirName = newBuffer1;
-*/
 
 
 
