@@ -20,6 +20,7 @@ void largestFile();
 void smallestFile();
 void specifyFile();
 char* generateName();
+void createMovieFiles(char* directoryName);
 
 int main()
 {
@@ -113,15 +114,15 @@ void largestFile()
     struct stat myDirStat;
     int counter = 0;
 
-    //iterate through all entries in directory
+    //iterate through all files in directory
     while ((aDir = readdir(currDir)) != NULL)
     {
         //check if movies file starts with prefix ("movies_")
         if (strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0)
         {
             int size = strlen(POSTFIX); //get size of POSTFIX (4 characters ".csv")
-            int tempSize = strlen(aDir->d_name) - size; //get size of directory - size
-            //make temp pointer to directory file starting at end - size address (which leaves just the last 4 characters)
+            int tempSize = strlen(aDir->d_name) - size; //get size of file - size
+            //make temp pointer to file starting at end - size address (which leaves just the last 4 characters)
             char *testName = &aDir->d_name[tempSize];
 
             //check if movies file ends with postfix (".csv")
@@ -152,9 +153,11 @@ void largestFile()
 
     //create a new directory name
     char* newDirName = generateName();
-
-    //create the directory
+    //create the directory with permissions: rwxr-x---
     mkdir(newDirName, 0750);
+
+    //create files within newDirName, one file for each year a movie was released (.txt files)
+    createMovieFiles(newDirName);
 
 
 printf("%s", newDirName);
@@ -217,4 +220,13 @@ char* generateName()
     free(newBuffer);
 
     return newDirName;
+}
+
+
+
+void createMovieFiles(char* directoryName)
+{
+    
+
+    return;
 }
