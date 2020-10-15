@@ -150,6 +150,13 @@ void largestFile()
 
     printf("\n");
 
+
+    char result[50];
+    sprintf(result, "%i", randomNumber);
+    //printf("%s\n", result);
+
+
+
     char* newDirName = "stumbaup";
     char* moviesName = ".movies.";
     char* ONID = "stumbuap";
