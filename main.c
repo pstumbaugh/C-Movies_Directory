@@ -13,7 +13,6 @@
 
 #define PREFIX "movies_"
 #define POSTFIX ".csv"
-#define ONID "stumbaup"
 
 //FUNCTION DECLARATIONS
 void fileProcessingMenu();
@@ -113,7 +112,6 @@ void largestFile()
     struct stat myDirStat;
     int counter = 0;
     int randomNumber = random() % 10000;
-    printf("%i", randomNumber);
 
     //iterate through all entries in directory
     while ((aDir = readdir(currDir)) != NULL)
@@ -152,7 +150,40 @@ void largestFile()
 
     printf("\n");
 
+    char* newDirName = "stumbaup";
+    char* moviesName = ".movies.";
+    char* ONID = "stumbuap";
+    int newSize = strlen(newDirName) + strlen(moviesName); //total size of dir name
 
+    char* newBuffer = (char *)malloc(newSize); //make memory room for new dir name size
+
+    //copy and concat the names
+    strcpy(newBuffer,newDirName);
+    strcat(newBuffer,moviesName);
+    // store new pointer
+    newDirName = newBuffer;
+
+printf("%s", newDirName);
+
+   // release old buffer
+ //  free(real[i].buffer);
+
+/*
+    newSize = strlen(newDirName) + strlen(ONID); //total size of dir name
+
+    char* newBuffer1 = (char *)malloc(newSize); //make memory room for new dir name size
+
+    //copy and concat the names
+    strcpy(newBuffer1,newDirName);
+    strcat(newBuffer1,moviesName);
+    // store new pointer
+    newDirName = newBuffer1;
+*/
+
+
+
+
+printf("%s", newDirName);
 
     //close directory and exit function
     closedir(currDir);
