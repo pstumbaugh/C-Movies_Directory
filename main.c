@@ -258,7 +258,7 @@ char* generateName()
 void createMovieFiles(const char* directoryName, char* fileName)
 {
 
-    DIR* currDir = opendir(directoryName);
+    DIR* currDir = opendir("./");
     struct dirent *moviesDirectory;
 
     //process the file
