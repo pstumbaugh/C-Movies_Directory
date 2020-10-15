@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
+
 
 #define PREFIX "movies_"
 #define POSTFIX ".csv"
@@ -20,7 +22,11 @@ void largestFile();
 void smallestFile();
 void specifyFile();
 char* generateName();
-void createMovieFiles(char* directoryName, char* fileName);
+void createMovieFiles(const char* directoryName, char* fileName);
+struct movie *createMovie(char *currLine);
+struct movie *processFile(char *filePath);
+void freeMem(struct movie *list);
+
 
 int main()
 {
@@ -57,6 +63,25 @@ int main()
 
     return EXIT_SUCCESS;
 }
+
+
+
+//movie struct
+struct movie
+{
+    //variables within movie struct
+    char *title;
+    char *tempYear; //using as a temp holder, will change str to int year
+    int year;
+    //at most, 5 languages can be saved (0-4)
+    //each string max of 20 characters (+null terminating)
+    char languages[4][21];
+    char *tempRating; //using as a temp holder, will change str to int rating
+    double rating;
+    struct movie *next; //pointer to next linked list item
+};
+
+
 
 
 
@@ -156,11 +181,14 @@ void largestFile()
     //create the directory with permissions: rwxr-x---
     mkdir(newDirName, 0750);
 
+printf("%s\n\n", newDirName);
+
     //create files within newDirName, one file for each year a movie was released (.txt files)
     createMovieFiles(newDirName, myDir->d_name);
 
+printf("%s\n\n", newDirName);
 
-printf("%s", newDirName);
+
 
     //close directory and exit function
     closedir(currDir);
@@ -227,14 +255,36 @@ char* generateName()
 //Creates files for each year, if a movie was released in that year. 
 //INPUT: char* directoryName and fileName
 //OUPUT: creates .txt files wihtin directoryName 
-void createMovieFiles(char* directoryName, char* fileName)
+void createMovieFiles(const char* directoryName, char* fileName)
 {
-    //process the file
-    processFile(fileName);
 
+    DIR* currDir = opendir(directoryName);
+    struct dirent *moviesDirectory;
+
+    //process the file
+    struct movie *moviesLL = processFile(fileName);
+
+    while (moviesLL != NULL)
+    {
+        int thisYear = moviesLL->year;
+	    int file_descriptor;
+	    char* newFilePath = ("./%i", thisYear);
+
+	    file_descriptor = open(newFilePath, O_RDWR | O_CREAT | O_TRUNC, 0640); //permissions: read-write, read, none
+	    if (file_descriptor == -1)
+        {
+		    printf("open() failed on \"%s\"\n", newFilePath);
+		    perror("Error");
+		    exit(1);
+	    }
+        moviesLL = moviesLL->next;
+
+    }
+
+
+    closedir(currDir);
     return;
 }
-
 
 
 
@@ -357,17 +407,25 @@ struct movie *processFile(char *filePath)
 }
 
 
-//movie struct
-struct movie
+
+
+
+void freeMem(struct movie *list)
 {
-    //variables within movie struct
-    char *title;
-    char *tempYear; //using as a temp holder, will change str to int year
-    int year;
-    //at most, 5 languages can be saved (0-4)
-    //each string max of 20 characters (+null terminating)
-    char languages[4][21];
-    char *tempRating; //using as a temp holder, will change str to int rating
-    double rating;
-    struct movie *next; //pointer to next linked list item
-};
+
+    struct movie *temp = list;
+    while (temp != NULL)
+    {
+        struct movie *temp2 = temp->next;
+        free(temp->title);
+        free(temp->tempYear);
+        free(temp->tempRating);
+        free(temp);
+        temp = temp2;
+    }
+
+    return;
+}
+
+
+
