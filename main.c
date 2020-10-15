@@ -268,7 +268,9 @@ void createMovieFiles(const char* directoryName, char* fileName)
     {
         int thisYear = moviesLL->year;
 	    int file_descriptor;
-	    char* newFilePath = ("./%i", thisYear);
+        char* yearStr = (char*)thisYear;
+	    char* newFilePath = "./";
+        strcat(newFilePath, yearStr);
 
 	    file_descriptor = open(newFilePath, O_RDWR | O_CREAT | O_TRUNC, 0640); //permissions: read-write, read, none
 	    if (file_descriptor == -1)
