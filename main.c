@@ -268,10 +268,26 @@ void createMovieFiles(const char* directoryName, char* fileName)
     {
         int thisYear = moviesLL->year;
 	    int file_descriptor;
-        char* yearStr = (char*)thisYear;
-	    char* newFilePath = "./";
-        strcat(newFilePath, yearStr);
+        char yearStr[50];
+        char* moviesPrefix = "./";
+        sprintf(yearStr, "%i", thisYear); // convert to string
 
+        //get total size of new name
+        int newSize = strlen(moviesPrefix) + strlen(yearStr);
+
+        //allocate memory for new name size
+        char* newBuffer = (char *)malloc(newSize);
+
+        //copy and concat the names into newBuffer
+        strcpy(newBuffer,moviesPrefix);
+        strcat(newBuffer,yearStr);
+
+        // copy the new buffer
+        char* newFilePath = newBuffer;
+
+        free(newBuffer);
+
+        //open file and do work
 	    file_descriptor = open(newFilePath, O_RDWR | O_CREAT | O_TRUNC, 0640); //permissions: read-write, read, none
 	    if (file_descriptor == -1)
         {
