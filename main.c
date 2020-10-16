@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include<time.h> 
 
 
 #define PREFIX "movies_"
@@ -22,7 +23,7 @@ void largestFile();
 void smallestFile();
 void specifyFile();
 char* generateName();
-void createMovieFiles(const char* directoryName, char* fileName);
+void createMovieFiles(char* fileName);
 struct movie *createMovie(char *currLine);
 struct movie *processFile(char *filePath);
 void freeMem(struct movie *list);
@@ -178,17 +179,32 @@ void largestFile()
 
     //create a new directory name
     char* newDirName = generateName();
-    //create the directory with permissions: rwxr-x---
+
+    //make the directory with permissions: rwxr-x---
     mkdir(newDirName, 0750);
 
-printf("%s\n\n", newDirName);
+    char* fileName = myDir->d_name; //copy current directory name into fileName
 
-    //create files within newDirName, one file for each year a movie was released (.txt files)
-    createMovieFiles(newDirName, myDir->d_name);
+    chdir(newDirName); //change to the child directory recently created
 
-printf("%s\n\n", newDirName);
+        //save the file path to get back to parent directory (used to reference file in parent directory while in createMovieFiles function)
+        char* parentFilePath = "../"; //prefix for going to parent directory
+        //get total size of new parent directory name
+        int parentNewSize = strlen(parentFilePath)+ strlen(fileName);
+        //allocate memory for new name size
+        char* pFilePathBuffer = (char *)malloc(parentNewSize);
+        //copy and concat the names into pFilePathBuffer
+        strcpy(pFilePathBuffer,parentFilePath);
+        strcat(pFilePathBuffer,fileName);
+        // copy the new buffer
+        parentFilePath = pFilePathBuffer;
+        //release old buffer
+        free(pFilePathBuffer);
 
+        //create files within newDirName (the current directory we are in), one file for each year a movie was released (.txt files)
+        createMovieFiles(parentFilePath);
 
+    chdir(".."); //change back to parent directory
 
     //close directory and exit function
     closedir(currDir);
@@ -221,6 +237,8 @@ void specifyFile()
 //OUTPUT: cstring
 char* generateName()
 {
+    // Use current time as seed for random generator 
+    srandom(time(0)); 
     int randomNumber = random() % 10000;
     //create spot for random number int to be converted to string
     char rNumStr[50];
@@ -255,11 +273,10 @@ char* generateName()
 //Creates files for each year, if a movie was released in that year. 
 //INPUT: char* directoryName and fileName
 //OUPUT: creates .txt files wihtin directoryName 
-void createMovieFiles(const char* directoryName, char* fileName)
+void createMovieFiles(char* fileName)
 {
 
-    DIR* currDir = opendir("./");
-    struct dirent *moviesDirectory;
+    //chdir("./");
 
     //process the file
     struct movie *moviesLL = processFile(fileName);
@@ -269,18 +286,18 @@ void createMovieFiles(const char* directoryName, char* fileName)
         int thisYear = moviesLL->year;
 	    int file_descriptor;
         char yearStr[50];
-        char* moviesPrefix = "./";
+        char* moviesPostfix = ".txt";
         sprintf(yearStr, "%i", thisYear); // convert to string
 
         //get total size of new name
-        int newSize = strlen(moviesPrefix) + strlen(yearStr);
+        int newSize = strlen(moviesPostfix) + strlen(yearStr);
 
         //allocate memory for new name size
         char* newBuffer = (char *)malloc(newSize);
 
         //copy and concat the names into newBuffer
-        strcpy(newBuffer,moviesPrefix);
-        strcat(newBuffer,yearStr);
+        strcpy(newBuffer,yearStr);
+        strcat(newBuffer,moviesPostfix);
 
         // copy the new buffer
         char* newFilePath = newBuffer;
@@ -300,7 +317,7 @@ void createMovieFiles(const char* directoryName, char* fileName)
     }
 
 
-    closedir(currDir);
+
     return;
 }
 
