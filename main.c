@@ -305,13 +305,47 @@ void createMovieFiles(char* fileName)
         free(newBuffer);
 
         //open file and do work
-	    file_descriptor = open(newFilePath, O_RDWR | O_CREAT | O_TRUNC, 0640); //permissions: read-write, read, none
+	    file_descriptor = open(newFilePath, O_RDWR | O_CREAT | O_APPEND, 0640); //permissions: read-write, read, none
 	    if (file_descriptor == -1)
         {
 		    printf("open() failed on \"%s\"\n", newFilePath);
 		    perror("Error");
 		    exit(1);
 	    }
+        //write our string to the file
+        int messageSize = strlen(moviesLL->title) + 1;
+        char message[messageSize]; //create cstring of the size of the title about to be copied
+        strcpy(message, moviesLL->title);
+
+        FILE* myFile = fopen(newFilePath, "r"); //temp open a file to read (checking the size if it's empty or not)
+        fseek (myFile, 0, SEEK_END);
+        int size = ftell(myFile);
+        fclose(myFile);
+        if (size == 0)
+        {
+            write(file_descriptor, message, strlen(message) + 1); //write message(title) to file
+        }
+        else
+        {
+            char newLine[] = "\n"; //create new line and write to file
+            write(file_descriptor, newLine, strlen(newLine) + 1); //write message(title) to file
+            write(file_descriptor, message, strlen(message) + 1); //write message(title) to file
+        }
+
+
+
+
+        // Close the file descriptor
+        close(file_descriptor);
+
+
+
+
+
+
+
+
+
         moviesLL = moviesLL->next;
 
     }
