@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h> 
+#include <stdbool.h>
 
 
 #define PREFIX "movies_"
@@ -263,6 +264,81 @@ void specifyFile()
 
     printf("Now processing the chosen file named %s\n", userFileName);
 
+
+    //open the current directory
+    DIR* currDir = opendir(".");
+
+    struct dirent *aDir; //used for current directory being examined
+    struct stat dirStat;
+    bool flag = false; //flag for whether file is found or not
+
+    //iterate through all files in directory
+    while ((aDir = readdir(currDir)) != NULL)
+    {
+        //check if movies file is same as user's file name
+        if (strncmp(userFileName, aDir->d_name, strlen(userFileName)) == 0)
+        {
+            //file found, set flag to true
+            flag = true;
+        }
+    }
+
+    //if going through all the files doesn't find anything matching, it will keep the flag as false
+    if (flag == false)
+    {
+        printf("The file %s was not found. Try again.", userFileName);
+        //close directory and exit function
+        closedir(currDir);
+        return;
+    }
+    else //file name found a match, create a new directory and .txt contents
+    {
+        //display which file it is processing
+        printf("Now processing the chosen file named %s\n", userFileName);
+
+        //create a new directory name
+        char* newDirName = generateName();
+
+        //make the directory with permissions: rwxr-x--- (0750)
+        mkdir(newDirName, 0750);
+
+        printf("Created directory with name %s\n", newDirName);
+
+        //copy current file name into fileName (uncessary, but keeping with code setup of largestFile() and smallestFile() )
+        char* fileName = userFileName; 
+
+        chdir(newDirName); //change to the child directory recently created
+
+            //save the file path to get back to parent directory 
+            //(used to reference file in parent directory while in createMovieFiles function, since we're in 
+            // the newly created child directory)
+            char* parentFilePath = "../"; //prefix for going to parent directory
+
+            //get total size of new parent directory name
+            int parentNewSize = strlen(parentFilePath)+ strlen(fileName);
+
+            //allocate memory for new parent directory name size
+            char* pFilePathBuffer = (char *)malloc(parentNewSize);
+
+            //copy and concat the names into pFilePathBuffer
+            strcpy(pFilePathBuffer,parentFilePath);
+            strcat(pFilePathBuffer,fileName);
+
+            // copy the new buffer
+            parentFilePath = pFilePathBuffer;
+
+            //release old buffer
+            free(pFilePathBuffer);
+
+            //create files within newDirName (the current directory we are in), one file for each year a movie was released (.txt files)
+            createMovieFiles(parentFilePath);
+
+        chdir(".."); //change back to parent directory     
+    }
+
+    //close directory and exit function
+    closedir(currDir);
+    
     return;
 }
 
