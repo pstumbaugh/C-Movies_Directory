@@ -235,7 +235,10 @@ void largestFile()
 
 
 
-
+//Finds the smallest file in the current directory, creates new directory and parses
+// that info into year categories in the new directory. Returns to parent directory
+//INPUT: nothing
+//OUTPUT: creates new directory with movie info inside it
 void smallestFile()
 {
 
@@ -306,7 +309,7 @@ void createMovieFiles(char* fileName)
     {
         int thisYear = moviesLL->year;
 	    int file_descriptor;
-        char yearStr[50];
+        char yearStr[10];
         char* moviesPostfix = ".txt";
         sprintf(yearStr, "%i", thisYear); // convert to string
 
@@ -338,15 +341,16 @@ void createMovieFiles(char* fileName)
         char message[messageSize]; //create cstring of the size of the title about to be copied
         strcpy(message, moviesLL->title);
 
-        FILE* myFile = fopen(newFilePath, "r"); //temp open a file to read (checking the size if it's empty or not)
+        //temp open a file to read (checking the size if it's empty or not)
+        FILE* myFile = fopen(newFilePath, "r"); 
         fseek (myFile, 0, SEEK_END);
         int size = ftell(myFile);
         fclose(myFile);
-        if (size == 0)
+        if (size == 0) //empty file
         {
             write(file_descriptor, message, strlen(message) + 1); //write message(title) to file
         }
-        else
+        else //not empty file
         {
             char newLine[] = "\n"; //create new line and write to file
             write(file_descriptor, newLine, strlen(newLine) + 1); //write message(title) to file
@@ -356,8 +360,8 @@ void createMovieFiles(char* fileName)
         // Close the file descriptor
         close(file_descriptor);
 
+        //go to next movie in list
         moviesLL = moviesLL->next;
-
     }
 
     //free up memory from movies linked list
@@ -432,8 +436,6 @@ struct movie *createMovie(char *currLine)
 
     return currMovie;
 }
-
-
 
 
 
