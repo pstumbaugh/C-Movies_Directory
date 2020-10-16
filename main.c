@@ -87,11 +87,16 @@ struct movie
 
 
 //FUNCTIONS ------------------------------------------------------------
+
+//Displays a menu with options for what to do with the file
+//INPUT: nothing
+//OUTPUT: (depends on which option selected)
 void fileProcessingMenu()
 {
-    int fpmUserChoice = 1;
+    int fpmUserChoice = 1; //default user choice (so that it enters following loop)
     while (fpmUserChoice)
     {
+        //display choices
         printf("Which file do you want to process?\n");
         printf("Enter 1 to pick the largest file\n");
         printf("Enter 2 to pick the smallest file\n");
@@ -104,41 +109,49 @@ void fileProcessingMenu()
 
         printf("\n");
 
-        //if bad input (out of bounds)
+        //if bad input (out of bounds), print error and ask again
         if (fpmUserChoice < 1 || fpmUserChoice > 3)
             printf("You entered an incorrect choice. Try again.\n\n");
 
+        //pick largest file choice
         else if (fpmUserChoice == 1)
         {
             largestFile();
             break;
         }
+        //pick smallest file choice
         else if (fpmUserChoice == 2)
         {
             smallestFile();
             break;
         }
+        //pick specific name file choice
         else if (fpmUserChoice == 3)
         {
             specifyFile();
             break;
         }
     }
-
     return;
 }
 
 
 
+//Finds the largest file in the current directory, creates new directory and parses
+// that info into year categories in the new directory. Returns to parent directory
+//INPUT: nothing
+//OUTPUT: creates new directory with movie info inside it
 void largestFile()
 {
     //open the current directory
     DIR* currDir = opendir(".");
-    struct dirent *myDir; //used to save largest file
-    struct dirent *aDir;
+
+    struct dirent *aDir; //used for current directory being examined
     struct stat dirStat;
+    struct dirent *myDir; //used to save largest file
     struct stat myDirStat;
-    int counter = 0;
+
+    int counter = 0; //used to see if it's first file or not (0 = first file, 1+ = not first file)
 
     //iterate through all files in directory
     while ((aDir = readdir(currDir)) != NULL)
@@ -154,15 +167,16 @@ void largestFile()
             //check if movies file ends with postfix (".csv")
             if (strcmp(testName, POSTFIX) == 0)
             {
-                if (counter == 0)//first item matching name qualifications, save that
+                if (counter == 0)//if the counter = 0, then it's the firstfile being examined
                 {
                     myDir = aDir;
                     counter = 1;
                 }
-                else // check if aDir (one being viewed currrently) is larger than saved myDir
+                else // check if aDir (one being viewed currrently) is larger than saved myDir, using stat
                 {
                     stat(aDir->d_name, &dirStat);
                     stat(myDir->d_name, &myDirStat);
+
                     //if new dir is larger than currently saved dir, copy over the old one with the new one
                     if (dirStat.st_size > myDirStat.st_size)
                     {
@@ -180,24 +194,32 @@ void largestFile()
     //create a new directory name
     char* newDirName = generateName();
 
-    //make the directory with permissions: rwxr-x---
+    //make the directory with permissions: rwxr-x--- (0750)
     mkdir(newDirName, 0750);
 
-    char* fileName = myDir->d_name; //copy current directory name into fileName
+    //copy current directory name into fileName
+    char* fileName = myDir->d_name; 
 
     chdir(newDirName); //change to the child directory recently created
 
-        //save the file path to get back to parent directory (used to reference file in parent directory while in createMovieFiles function)
+        //save the file path to get back to parent directory 
+        //(used to reference file in parent directory while in createMovieFiles function, since we're in 
+        // the newly created child directory)
         char* parentFilePath = "../"; //prefix for going to parent directory
+
         //get total size of new parent directory name
         int parentNewSize = strlen(parentFilePath)+ strlen(fileName);
-        //allocate memory for new name size
+
+        //allocate memory for new parent directory name size
         char* pFilePathBuffer = (char *)malloc(parentNewSize);
+
         //copy and concat the names into pFilePathBuffer
         strcpy(pFilePathBuffer,parentFilePath);
         strcat(pFilePathBuffer,fileName);
+
         // copy the new buffer
         parentFilePath = pFilePathBuffer;
+
         //release old buffer
         free(pFilePathBuffer);
 
