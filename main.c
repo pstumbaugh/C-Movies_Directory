@@ -254,20 +254,20 @@ void specifyFile()
 
 
 
-//Creates a new char* name using ONID, _movies_, random number
+//Creates a new char* name using "ONID" + ".movies." + "random number"
 //INPUT: nothing
 //OUTPUT: cstring
 char* generateName()
 {
     // Use current time as seed for random generator 
     srandom(time(0)); 
-    int randomNumber = random() % 10000;
-    //create spot for random number int to be converted to string
-    char rNumStr[50];
-    sprintf(rNumStr, "%i", randomNumber); // convert to string
-    //printf("%s\n", rNumStr);
+    int randomNumber = random() % 10000; //mod by 10000 to get numbers (remainders) under 99999
 
-    char* newDirName = "stumbaup";
+    //create spot for random number int to be converted to string
+    char rNumStr[10];
+    sprintf(rNumStr, "%i", randomNumber); // convert to string
+
+    char* newDirName = "";
     char* moviesName = ".movies.";
     char* ONID = "stumbuap";
     //get total size of new name
@@ -277,9 +277,9 @@ char* generateName()
     char* newBuffer = (char *)malloc(newSize);
 
     //copy and concat the names into newBuffer
-    strcpy(newBuffer,newDirName);
-    strcat(newBuffer,moviesName);
-    strcat(newBuffer,rNumStr);
+    strcpy(newBuffer,newDirName); //add prefix (ONID)
+    strcat(newBuffer,moviesName); //add ".movies."
+    strcat(newBuffer,rNumStr); //add postfix (random number)
 
     // copy the new buffer
     newDirName = newBuffer;
@@ -293,13 +293,15 @@ char* generateName()
 
 
 //Creates files for each year, if a movie was released in that year. 
-//INPUT: char* directoryName and fileName
+//creates files in the current directory from the calling function
+//INPUT: fileName
 //OUPUT: creates .txt files wihtin directoryName 
 void createMovieFiles(char* fileName)
 {
-    //process the file
+    //process the file (creates a linked list of movies with head pointer in *moviesLL)
     struct movie *moviesLL = processFile(fileName);
 
+    //iterate through all the movies in our linked list of movies
     while (moviesLL != NULL)
     {
         int thisYear = moviesLL->year;
