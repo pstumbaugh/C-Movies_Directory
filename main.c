@@ -275,9 +275,6 @@ char* generateName()
 //OUPUT: creates .txt files wihtin directoryName 
 void createMovieFiles(char* fileName)
 {
-
-    //chdir("./");
-
     //process the file
     struct movie *moviesLL = processFile(fileName);
 
@@ -332,19 +329,8 @@ void createMovieFiles(char* fileName)
             write(file_descriptor, message, strlen(message) + 1); //write message(title) to file
         }
 
-
-
-
         // Close the file descriptor
         close(file_descriptor);
-
-
-
-
-
-
-
-
 
         moviesLL = moviesLL->next;
 
