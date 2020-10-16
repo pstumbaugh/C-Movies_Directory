@@ -316,7 +316,8 @@ void createMovieFiles(char* fileName)
 
     }
 
-
+    //free up memory from movies linked list
+    freeMem(moviesLL);
 
     return;
 }
