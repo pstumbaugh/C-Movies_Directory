@@ -22,7 +22,7 @@
 void fileProcessingMenu();
 void largestFile();
 void smallestFile();
-void specifyFile();
+bool specifyFile();
 char* generateName();
 void createMovieFiles(char* fileName);
 struct movie *createMovie(char *currLine);
@@ -133,8 +133,10 @@ void fileProcessingMenu()
         //pick specific name file choice
         else if (fpmUserChoice == 3)
         {
-            specifyFile();
-            break;
+            if (specifyFile() == true) //Found the file, exit processing menu
+                break;
+            else //didn't find the file, re-loop through processing menu options
+                fpmUserChoice = 1;
         }
     }
     return;
@@ -252,18 +254,15 @@ void smallestFile()
 
 
 
-void specifyFile()
+bool specifyFile()
 {
     char userFileName[50];
     //prompt for the name of the file the user wants to process
-    printf("Enter the comlete file name: ");
+    printf("Enter the complete file name: ");
     //Get user input
     scanf("%s", userFileName);
 
     printf("\n");
-
-    printf("Now processing the chosen file named %s\n", userFileName);
-
 
     //open the current directory
     DIR* currDir = opendir(".");
@@ -286,10 +285,11 @@ void specifyFile()
     //if going through all the files doesn't find anything matching, it will keep the flag as false
     if (flag == false)
     {
-        printf("The file %s was not found. Try again.", userFileName);
+        printf("The file %s was not found. Try again.\n", userFileName);
+        printf("\n");
         //close directory and exit function
         closedir(currDir);
-        return;
+        return false;
     }
     else //file name found a match, create a new directory and .txt contents
     {
@@ -339,7 +339,7 @@ void specifyFile()
     //close directory and exit function
     closedir(currDir);
     
-    return;
+    return true;
 }
 
 
