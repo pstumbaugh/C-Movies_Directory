@@ -241,7 +241,93 @@ void largestFile()
 //OUTPUT: creates new directory with movie info inside it
 void smallestFile()
 {
+    //open the current directory
+    DIR* currDir = opendir(".");
 
+    struct dirent *aDir; //used for current directory being examined
+    struct stat dirStat;
+    struct dirent *myDir; //used to save largest file
+    struct stat myDirStat;
+
+    int counter = 0; //used to see if it's first file or not (0 = first file, 1+ = not first file)
+
+    //iterate through all files in directory
+    while ((aDir = readdir(currDir)) != NULL)
+    {
+        //check if movies file starts with prefix ("movies_")
+        if (strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0)
+        {
+            int size = strlen(POSTFIX); //get size of POSTFIX (4 characters ".csv")
+            int tempSize = strlen(aDir->d_name) - size; //get size of file - size
+            //make temp pointer to file starting at end - size address (which leaves just the last 4 characters)
+            char *testName = &aDir->d_name[tempSize];
+
+            //check if movies file ends with postfix (".csv")
+            if (strcmp(testName, POSTFIX) == 0)
+            {
+                if (counter == 0)//if the counter = 0, then it's the firstfile being examined
+                {
+                    myDir = aDir;
+                    counter = 1;
+                }
+                else // check if aDir (one being viewed currrently) is larger than saved myDir, using stat
+                {
+                    stat(aDir->d_name, &dirStat);
+                    stat(myDir->d_name, &myDirStat);
+
+                    //if new dir is larger than currently saved dir, copy over the old one with the new one
+                    if (dirStat.st_size < myDirStat.st_size)
+                    {
+                        myDir = aDir;
+                    } 
+                }
+            }
+        }
+    }
+    //display which file it is processing
+    printf("Now processing the chosen file named %s\n", myDir->d_name);
+
+    printf("\n");
+
+    //create a new directory name
+    char* newDirName = generateName();
+
+    //make the directory with permissions: rwxr-x--- (0750)
+    mkdir(newDirName, 0750);
+
+    //copy current directory name into fileName
+    char* fileName = myDir->d_name; 
+
+    chdir(newDirName); //change to the child directory recently created
+
+        //save the file path to get back to parent directory 
+        //(used to reference file in parent directory while in createMovieFiles function, since we're in 
+        // the newly created child directory)
+        char* parentFilePath = "../"; //prefix for going to parent directory
+
+        //get total size of new parent directory name
+        int parentNewSize = strlen(parentFilePath)+ strlen(fileName);
+
+        //allocate memory for new parent directory name size
+        char* pFilePathBuffer = (char *)malloc(parentNewSize);
+
+        //copy and concat the names into pFilePathBuffer
+        strcpy(pFilePathBuffer,parentFilePath);
+        strcat(pFilePathBuffer,fileName);
+
+        // copy the new buffer
+        parentFilePath = pFilePathBuffer;
+
+        //release old buffer
+        free(pFilePathBuffer);
+
+        //create files within newDirName (the current directory we are in), one file for each year a movie was released (.txt files)
+        createMovieFiles(parentFilePath);
+
+    chdir(".."); //change back to parent directory
+
+    //close directory and exit function
+    closedir(currDir);
     return;
 }
 
