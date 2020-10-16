@@ -270,7 +270,7 @@ char* generateName()
     char rNumStr[10];
     sprintf(rNumStr, "%i", randomNumber); // convert to string
 
-    char* newDirName = "";
+    char* newDirName = "stumbaup";
     char* moviesName = ".movies.";
     char* ONID = "stumbuap";
     //get total size of new name
@@ -348,13 +348,13 @@ void createMovieFiles(char* fileName)
         fclose(myFile);
         if (size == 0) //empty file
         {
-            write(file_descriptor, message, strlen(message) + 1); //write message(title) to file
+            write(file_descriptor, message, strlen(message)); //write message(title) to file
         }
         else //not empty file
         {
             char newLine[] = "\n"; //create new line and write to file
-            write(file_descriptor, newLine, strlen(newLine) + 1); //write message(title) to file
-            write(file_descriptor, message, strlen(message) + 1); //write message(title) to file
+            write(file_descriptor, newLine, strlen(newLine)); //write message(title) to file
+            write(file_descriptor, message, strlen(message)); //write message(title) to file
         }
 
         // Close the file descriptor
