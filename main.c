@@ -372,6 +372,7 @@ void createMovieFiles(char* fileName)
 
 
 
+//**taken and edited from my HW1**
 //creator for movie struct. Will parse through current line to gather info
 //INPUT: currLine cstring pointer
 //OUTPUT: movie struct node
@@ -439,6 +440,7 @@ struct movie *createMovie(char *currLine)
 
 
 
+//**taken and edited from my HW1**
 //read through input file and parse information into a linked list of movies
 //INPUT: cstring pointer filePath
 //OUTPUT: head pointer to linked list
@@ -491,7 +493,9 @@ struct movie *processFile(char *filePath)
 
 
 
-
+//frees memory from heap from movies linked list
+//INPUT: movie list head pointer
+//OUTPUT: nothing
 void freeMem(struct movie *list)
 {
 
