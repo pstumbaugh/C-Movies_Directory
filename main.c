@@ -35,6 +35,7 @@ int main()
     int userChoice = 1; //initialize to 1 to enter while loop (later)
 
     //main user interface loop
+    //will exit on user choice of 2 (or 0 as loop would evaluate to false and exit)
     while (userChoice)
     {
         printf("\n");
@@ -63,7 +64,6 @@ int main()
             break;
         }
     }
-
 
     return EXIT_SUCCESS;
 }
@@ -275,7 +275,7 @@ bool specifyFile()
     while ((aDir = readdir(currDir)) != NULL)
     {
         //check if movies file is same as user's file name
-        if (strncmp(userFileName, aDir->d_name, strlen(userFileName)) == 0)
+        if (strncmp(userFileName, aDir->d_name, strlen(aDir->d_name)) == 0)
         {
             //file found, set flag to true
             flag = true;
