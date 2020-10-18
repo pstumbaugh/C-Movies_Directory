@@ -7,10 +7,10 @@ The main menu will give the user 3 different options. Use the largest file, use 
 
 To make the file:
 Create an executable in the command line of the same directory that main.c is in by typing in:
-    gcc --std=gnu99 -o movies main.c
+    gcc --std=gnu99 -o movies_by_year main.c
 
-This will create an executable file named "movies" (as per the -o flag command above)
+This will create an executable file named "movies_by_year" (as per the -o flag command above)
 
-To run the file, type "./movies" in the command line. This will start the executable file and you will follow the options from there. 
+To run the file, type "./movies_by_year" in the command line. This will start the executable file and you will follow the options from there. 
 
 *Note - the data files you will want to parse from must be in the same directory as the main.c and movies executable file. 
