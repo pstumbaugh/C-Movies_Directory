@@ -217,20 +217,21 @@ void largestFile()
         //save the file path to get back to parent directory 
         //(used to reference file in parent directory while in createMovieFiles function, since we're in 
         // the newly created child directory)
-        char* parentFilePath = "../"; //prefix for going to parent directory
+        char* parentFilePathStart = "../"; //prefix for going to parent directory
 
         //get total size of new parent directory name
-        int parentNewSize = strlen(parentFilePath)+ strlen(fileName);
+        int parentNewSize = strlen(parentFilePathStart)+ strlen(fileName);
 
         //allocate memory for new parent directory name size
         char* pFilePathBuffer = (char *)malloc(parentNewSize);
 
         //copy and concat the names into pFilePathBuffer
-        strcpy(pFilePathBuffer,parentFilePath);
+        strcpy(pFilePathBuffer,parentFilePathStart);
         strcat(pFilePathBuffer,fileName);
 
         // copy the new buffer
-        parentFilePath = pFilePathBuffer;
+        char parentFilePath[50];
+        strcpy(parentFilePath, pFilePathBuffer);
 
         //release old buffer
         free(pFilePathBuffer);
@@ -315,20 +316,21 @@ void smallestFile()
         //save the file path to get back to parent directory 
         //(used to reference file in parent directory while in createMovieFiles function, since we're in 
         // the newly created child directory)
-        char* parentFilePath = "../"; //prefix for going to parent directory
+        char* parentFilePathStart = "../"; //prefix for going to parent directory
 
         //get total size of new parent directory name
-        int parentNewSize = strlen(parentFilePath)+ strlen(fileName);
+        int parentNewSize = strlen(parentFilePathStart)+ strlen(fileName);
 
         //allocate memory for new parent directory name size
         char* pFilePathBuffer = (char *)malloc(parentNewSize);
 
         //copy and concat the names into pFilePathBuffer
-        strcpy(pFilePathBuffer,parentFilePath);
+        strcpy(pFilePathBuffer,parentFilePathStart);
         strcat(pFilePathBuffer,fileName);
 
         // copy the new buffer
-        parentFilePath = pFilePathBuffer;
+        char parentFilePath[50];
+        strcpy(parentFilePath, pFilePathBuffer);
 
         //release old buffer
         free(pFilePathBuffer);
@@ -402,26 +404,27 @@ bool specifyFile()
 
         chdir(newDirName); //change to the child directory recently created
 
-            //save the file path to get back to parent directory 
-            //(used to reference file in parent directory while in createMovieFiles function, since we're in 
-            // the newly created child directory)
-            char* parentFilePath = "../"; //prefix for going to parent directory
+        //save the file path to get back to parent directory 
+        //(used to reference file in parent directory while in createMovieFiles function, since we're in 
+        // the newly created child directory)
+        char* parentFilePathStart = "../"; //prefix for going to parent directory
 
-            //get total size of new parent directory name
-            int parentNewSize = strlen(parentFilePath)+ strlen(fileName);
+        //get total size of new parent directory name
+        int parentNewSize = strlen(parentFilePathStart)+ strlen(fileName);
 
-            //allocate memory for new parent directory name size
-            char* pFilePathBuffer = (char *)malloc(parentNewSize);
+        //allocate memory for new parent directory name size
+        char* pFilePathBuffer = (char *)malloc(parentNewSize);
 
-            //copy and concat the names into pFilePathBuffer
-            strcpy(pFilePathBuffer,parentFilePath);
-            strcat(pFilePathBuffer,fileName);
+        //copy and concat the names into pFilePathBuffer
+        strcpy(pFilePathBuffer,parentFilePathStart);
+        strcat(pFilePathBuffer,fileName);
 
-            // copy the new buffer
-            parentFilePath = pFilePathBuffer;
+        // copy the new buffer
+        char parentFilePath[50];
+        strcpy(parentFilePath, pFilePathBuffer);
 
-            //release old buffer
-            free(pFilePathBuffer);
+        //release old buffer
+        free(pFilePathBuffer);
 
             //create files within newDirName (the current directory we are in), one file for each year a movie was released (.txt files)
             createMovieFiles(parentFilePath);
@@ -450,22 +453,22 @@ char* generateName()
     char rNumStr[10];
     sprintf(rNumStr, "%i", randomNumber); // convert to string
 
-    char* newDirName = "stumbaup";
+    char* newDirNameStart = "stumbaup";
     char* moviesName = ".movies.";
     char* ONID = "stumbuap";
     //get total size of new name
-    int newSize = strlen(newDirName) + strlen(moviesName) + strlen(rNumStr);
+    int newSize = strlen(newDirNameStart) + strlen(moviesName) + strlen(rNumStr);
 
     //allocate memory for new name size
     char* newBuffer = (char *)malloc(newSize);
 
     //copy and concat the names into newBuffer
-    strcpy(newBuffer,newDirName); //add prefix (ONID)
+    strcpy(newBuffer,newDirNameStart); //add prefix (ONID)
     strcat(newBuffer,moviesName); //add ".movies."
     strcat(newBuffer,rNumStr); //add postfix (random number)
 
-    // copy the new buffer
-    newDirName = newBuffer;
+    char* newDirName;
+    strcpy(newDirName, newBuffer);
 
    // release old buffer
     free(newBuffer);
@@ -503,8 +506,10 @@ void createMovieFiles(char* fileName)
         strcpy(newBuffer,yearStr);
         strcat(newBuffer,moviesPostfix);
 
+        int tempSize = strlen(newBuffer);
         // copy the new buffer
-        char* newFilePath = newBuffer;
+        char newFilePath[tempSize];
+        strcpy(newFilePath, newBuffer);
 
         free(newBuffer);
 
