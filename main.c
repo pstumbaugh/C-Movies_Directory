@@ -230,7 +230,7 @@ void largestFile()
         strcat(pFilePathBuffer,fileName);
 
         // copy the new buffer
-        char parentFilePath[50];
+        char parentFilePath[strlen(pFilePathBuffer)+1];
         strcpy(parentFilePath, pFilePathBuffer);
 
         //release old buffer
@@ -329,7 +329,7 @@ void smallestFile()
         strcat(pFilePathBuffer,fileName);
 
         // copy the new buffer
-        char parentFilePath[50];
+        char parentFilePath[strlen(pFilePathBuffer)+1];
         strcpy(parentFilePath, pFilePathBuffer);
 
         //release old buffer
@@ -420,7 +420,7 @@ bool specifyFile()
         strcat(pFilePathBuffer,fileName);
 
         // copy the new buffer
-        char parentFilePath[50];
+        char parentFilePath[strlen(pFilePathBuffer)+1];
         strcpy(parentFilePath, pFilePathBuffer);
 
         //release old buffer
@@ -460,7 +460,7 @@ char* generateName()
     int newSize = strlen(newDirNameStart) + strlen(moviesName) + strlen(rNumStr);
 
     //allocate memory for new name size
-    char* newBuffer = (char *)malloc(newSize);
+    char* newBuffer = (char *)malloc(newSize+1);
 
     //copy and concat the names into newBuffer
     strcpy(newBuffer,newDirNameStart); //add prefix (ONID)
@@ -486,6 +486,7 @@ void createMovieFiles(char* fileName)
 {
     //process the file (creates a linked list of movies with head pointer in *moviesLL)
     struct movie *moviesLL = processFile(fileName);
+    struct movie *moviesHead = moviesLL;
 
     //iterate through all the movies in our linked list of movies
     while (moviesLL != NULL)
@@ -506,9 +507,8 @@ void createMovieFiles(char* fileName)
         strcpy(newBuffer,yearStr);
         strcat(newBuffer,moviesPostfix);
 
-        int tempSize = strlen(newBuffer);
         // copy the new buffer
-        char newFilePath[tempSize];
+        char newFilePath[strlen(newBuffer)];
         strcpy(newFilePath, newBuffer);
 
         free(newBuffer);
@@ -550,7 +550,7 @@ void createMovieFiles(char* fileName)
     }
 
     //free up memory from movies linked list
-    freeMem(moviesLL);
+    freeMem(moviesHead);
 
     return;
 }
@@ -564,7 +564,7 @@ void createMovieFiles(char* fileName)
 struct movie *createMovie(char *currLine)
 {
     //Variables
-    //allocate memory for new movie struct (will free at end of function)
+    //allocate memory for new movie struct
     struct movie *currMovie = malloc(sizeof(struct movie));
     // For use with strtok_r
     char *saveptr;
@@ -669,8 +669,7 @@ struct movie *processFile(char *filePath)
             tail = newNode; //reset tail pointer to current node
         }
     }
-    
-    free(currLine); //free up memory
+
     fclose(moviesFile); //close file
     return head;
 }
