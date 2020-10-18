@@ -620,6 +620,7 @@ struct movie *createMovie(char *currLine)
     //assume this node will be at end of list, set next pointer to NULL
     currMovie->next = NULL;
 
+
     return currMovie;
 }
 
